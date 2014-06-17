@@ -2,6 +2,9 @@
 django-nose
 ===========
 
+.. image:: https://travis-ci.org/django-nose/django-nose.png
+  :target: https://travis-ci.org/django-nose/django-nose
+
 Features
 --------
 
@@ -35,7 +38,7 @@ You can get django-nose from PyPI with... ::
 
 The development version can be installed with... ::
 
-    pip install -e git://github.com/jbalogh/django-nose.git#egg=django-nose
+    pip install -e git://github.com/django-nose/django-nose.git#egg=django-nose
 
 Since django-nose extends Django's built-in test command, you should add it to
 your ``INSTALLED_APPS`` in ``settings.py``::
@@ -182,7 +185,7 @@ large schema, this can save minutes of IO.
 django-nose's own FastFixtureTestCase uses this feature, even though it
 ultimately acts more like a TestCase than a TransactionTestCase.
 
-.. _can leave the DB in an unclean state: https://docs.djangoproject.com/en/dev/topics/testing/?from=olddocs#django.test.TransactionTestCase
+.. _can leave the DB in an unclean state: https://docs.djangoproject.com/en/1.4/topics/testing/#django.test.TransactionTestCase
 
 
 Test-Only Models
@@ -264,22 +267,22 @@ added to the Nose test runner.
 Older Versions of Django
 ------------------------
 Upgrading from Django <= 1.3 to Django 1.4
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In versions of Django < 1.4 the project folder was in fact a python package as 
-well (note the __init__.py in your project root). In Django 1.4, there is no 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In versions of Django < 1.4 the project folder was in fact a python package as
+well (note the __init__.py in your project root). In Django 1.4, there is no
 such file and thus the project is not a python module.
 
-**When you upgrade your Django project to the Django 1.4 layout, you need to 
-remove the __init__.py file in the root of your project (and move any python 
-files that reside there other than the manage.py) otherwise you will get a 
+**When you upgrade your Django project to the Django 1.4 layout, you need to
+remove the __init__.py file in the root of your project (and move any python
+files that reside there other than the manage.py) otherwise you will get a
 `ImportError: No module named urls` exception.**
 
-This happens because Nose will intelligently try to populate your sys.path, and 
-in this particular case includes your parent directory if your project has a 
+This happens because Nose will intelligently try to populate your sys.path, and
+in this particular case includes your parent directory if your project has a
 __init__.py file (see: https://github.com/nose-devs/nose/blob/release_1.1.2/nose/importer.py#L134).
 
 This means that even though you have set up your directory structure properly and
-set your `ROOT_URLCONF='my_project.urls'` to match the new structure, when running 
+set your `ROOT_URLCONF='my_project.urls'` to match the new structure, when running
 django-nose's test runner it will try to find your urls.py file in `'my_project.my_project.urls'`.
 
 
@@ -306,7 +309,7 @@ Django 1.1
 ~~~~~~~~~~
 
 If you want to use django-nose with Django 1.1, use
-https://github.com/jbalogh/django-nose/tree/django-1.1 or
+https://github.com/django-nose/django-nose/tree/django-1.1 or
 http://pypi.python.org/pypi/django-nose/0.0.3.
 
 Django 1.0
@@ -317,6 +320,10 @@ django-nose does not support Django 1.0.
 
 Recent Version History
 ----------------------
+
+1.2 (2013-07-23)
+  * Python 3 support (melinath and jonashaag)
+  * Django 1.5 compat (fabiosantoscode)
 
 1.1 (2012-05-19)
   * Django TransactionTestCases don't clean up after themselves; they leave

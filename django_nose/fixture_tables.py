@@ -5,12 +5,12 @@ can truncate them (and no others) quickly after we're finished with them."""
 import os
 import gzip
 import zipfile
+from itertools import product
 
 from django.conf import settings
 from django.core import serializers
 from django.db import router, DEFAULT_DB_ALIAS
 from django.db.models import get_apps
-from django.utils.itercompat import product
 
 try:
     import bz2
@@ -63,7 +63,7 @@ def tables_used_by_fixtures(fixture_labels, using=DEFAULT_DB_ALIAS):
             compression_formats = [parts[-1]]
             parts = parts[:-1]
         else:
-            compression_formats = compression_types.keys()
+            compression_formats = list(compression_types.keys())
 
         if len(parts) == 1:
             fixture_name = parts[0]

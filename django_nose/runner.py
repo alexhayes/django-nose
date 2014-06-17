@@ -7,10 +7,11 @@ You can use... ::
 in settings.py for arguments that you want always passed to nose.
 
 """
-import new
+from __future__ import print_function
 import os
 import sys
 from optparse import make_option
+from types import MethodType
 
 from django.conf import settings
 from django.core import exceptions
@@ -78,7 +79,7 @@ def _get_plugins_from_settings():
 
         try:
             mod = import_module(p_mod)
-        except ImportError, e:
+        except ImportError as e:
             raise exceptions.ImproperlyConfigured(
                     'Error importing Nose plugin module %s: "%s"' % (p_mod, e))
 
@@ -109,6 +110,11 @@ def _get_options():
                                dest='nose_verbosity',
                                metavar='NOSE_VERBOSITY',
                                **verbosity_attrs))
+
+    # Django 1.6 introduces a "--pattern" option, which is shortened into "-p"
+    # do not allow "-p" to collide with nose's "--plugins" option.
+    plugins_option = [o for o in options if o.get_opt_string() == '--plugins'][0]
+    plugins_option._short_opts.remove('-p')
 
     django_opts = [opt.dest for opt in BaseCommand.option_list] + ['version']
     return tuple(o for o in options if o.dest not in django_opts and
@@ -174,7 +180,7 @@ class BasicNoseRunner(DjangoTestSuiteRunner):
             nose_argv.extend(settings.NOSE_ARGS)
 
         # Skip over 'manage.py test' and any arguments handled by django.
-        django_opts = ['--noinput', '--liveserver']
+        django_opts = ['--noinput', '--liveserver', '-p', '--pattern']
         for opt in BaseCommand.option_list:
             django_opts.extend(opt._long_opts)
             django_opts.extend(opt._short_opts)
@@ -189,7 +195,7 @@ class BasicNoseRunner(DjangoTestSuiteRunner):
             nose_argv.append('--verbosity=%s' % str(self.verbosity))
 
         if self.verbosity >= 1:
-            print ' '.join(nose_argv)
+            print(' '.join(nose_argv))
 
         result = self.run_suite(nose_argv)
         # suite_result expects the suite as the first argument.  Fake it.
@@ -280,7 +286,7 @@ def _should_create_database(connection):
     # Notice whether the DB exists, and create it if it doesn't:
     try:
         connection.cursor()
-    except StandardError:  # TODO: Be more discerning but still DB agnostic.
+    except Exception:  # TODO: Be more discerning but still DB agnostic.
         return True
     return not _reusing_db()
 
@@ -367,7 +373,7 @@ class NoseTestSuiteRunner(BasicNoseRunner):
 
                 # Each connection has its own creation object, so this affects
                 # only a single connection:
-                creation.create_test_db = new.instancemethod(
+                creation.create_test_db = MethodType(
                         _skip_create_test_db, creation, creation.__class__)
 
         Command.handle = _foreign_key_ignoring_handle
